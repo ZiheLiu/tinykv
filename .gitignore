@@ -1,0 +1,11 @@
+# For MacOS.
+**/.DS_Store
+
+# For clion.
+.idea/
+
+# For build.
+cmake-build-debug/
+**/build/
+
+
