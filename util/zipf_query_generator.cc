@@ -14,14 +14,14 @@ namespace tinykv {
                                                    ZipfQueryGenerator **result) {
     uint64_t file_size;
     Status s = GetFileSize(filename, &file_size);
-    CHECK_STATUS(s)
+    RETURN_IFN_OK(s)
 
     ZipfQueryGenerator *generator = new ZipfQueryGenerator();
     generator->buf_ = new char[file_size];
 
     SequentialFile *fin;
     s = NewSequentialFile(filename, &fin);
-    CHECK_STATUS(s)
+    RETURN_IFN_OK(s)
 
     uint64_t offset;
     uint64_t key_size;

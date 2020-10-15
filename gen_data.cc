@@ -7,28 +7,20 @@
 #include "util/file.h"
 #include "util/random.h"
 #include "util/coding.h"
+#include "constants.h"
 
 namespace tinykv {
-  constexpr int64_t kDataBytes = 1024L * 1024 * 1024 * 16;
-
-  constexpr int32_t kKeyBytesMin = 1;
-  constexpr int32_t kKeyBytesMax = 1024;
-  constexpr int32_t kValueBytesMin = 1;
-  constexpr int32_t kValueBytesMax = 1024 * 1024;
-
-  constexpr int32_t kQueryTimes = 10000;
-  constexpr int32_t kMaxQueryTimes = 1000;
 
   Status generate_data() {
-    printf("Start generating kv data (%lldMB in total)...\n", kDataBytes / 1024 / 1024);
+    printf("Start generating kv data (%lldMB in total)...\n", kGenDataBytes / 1024 / 1024);
 
     WritableFile* fout;
     Status status = NewWritableFile("raw_input_kv.bin", &fout);
-    CHECK_STATUS(status)
+    RETURN_IFN_OK(status)
 
     WritableFile* query_fout;
     status = NewWritableFile("query_kv.bin", &query_fout);
-    CHECK_STATUS(status)
+    RETURN_IFN_OK(status)
 
     Random::Init();
 
@@ -37,7 +29,7 @@ namespace tinykv {
     int kv_num = 0;
     int query_times = 0;
     int query_kv_num = 0;
-    while (data_bytes < kDataBytes) {
+    while (data_bytes < kGenDataBytes) {
       char* ptr = buf;
       uint64_t key_size = Random::NextInt(kKeyBytesMin, kKeyBytesMax);
       EncodeFixed64(ptr, key_size);
@@ -52,15 +44,15 @@ namespace tinykv {
       ptr += value_size;
 
       status = fout->Append(Slice(buf, ptr - buf));
-      CHECK_STATUS(status)
+      RETURN_IFN_OK(status)
 
       data_bytes += ptr - buf;
       kv_num++;
 
       if (query_times < kQueryTimes && Random::NextFloat() < 0.2) {
-        query_times += kMaxQueryTimes / (++query_kv_num);
+        query_times += kFirstQueryTimes / (++query_kv_num);
         status = query_fout->Append(Slice(buf, ptr - buf));
-        CHECK_STATUS(status)
+        RETURN_IFN_OK(status)
       }
     }
 

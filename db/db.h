@@ -7,7 +7,7 @@
 
 #include "util/slice.h"
 #include "util/status.h"
-#include "db/options.h"
+#include "include/options.h"
 
 namespace tinykv {
 

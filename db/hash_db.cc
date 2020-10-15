@@ -2,7 +2,6 @@
 // Created by liuzihe on 2020/10/15.
 //
 
-#include "db/db.h"
 #include "util/file.h"
 #include "util/hash.h"
 #include "db/hash_db.h"
@@ -20,7 +19,7 @@ namespace tinykv {
                           void** result) {
       SequentialFile *fin;
       Status s = NewSequentialFile(raw_filename, &fin);
-      CHECK_STATUS(s)
+      RETURN_IFN_OK(s)
       WritableFile *fout;
       s = NewWritableFile(index_filename, &fout);
       if (!s.ok()) {
@@ -40,24 +39,18 @@ namespace tinykv {
       for (;;) {
         // Read key_size.
         s = fin->Read(8, &slice, size_buf);
-        if (!s.ok()) {
-          break;
-        }
+        BREAK_IFN_OK(s)
         if (slice.Empty()) {
           break;
         }
         key_size = DecodeFixed64(size_buf);
         // Read key.
         s = fin->Read(key_size, &slice, buf);
-        if (!s.ok()) {
-          break;
-        }
+        BREAK_IFN_OK(s)
 
         // Read value_size.
         s = fin->Read(8, &slice, size_buf);
-        if (!s.ok()) {
-          break;
-        }
+        BREAK_IFN_OK(s)
         value_size = DecodeFixed64(size_buf);
         // Read value.
         s = fin->Read(value_size, &slice, buf + key_size);
@@ -71,9 +64,7 @@ namespace tinykv {
         EncodeFixed64(buf + key_size + value_size + 8, bucket[1]);
         EncodeFixed64(buf + key_size + value_size + 16, bucket[2]);
         s = fout->Append(Slice(buf, key_size + value_size + 8 * 3));
-        if (!s.ok()) {
-          break;
-        }
+        BREAK_IFN_OK(s)
 
         bucket[0] = out_offset;
         bucket[1] = key_size;
@@ -113,10 +104,8 @@ namespace tinykv {
           return Status::NotFound(key);
         }
 
-        Status status = fin_->Read(offset, key_size + value_size + 8 * 3, &result, buf);
-        if (!status.ok()) {
-          return status;
-        }
+        Status s = fin_->Read(offset, key_size + value_size + 8 * 3, &result, buf);
+        RETURN_IFN_OK(s)
 
         // Find this key.
         if (key.compare(Slice(buf, key_size)) == 0) {

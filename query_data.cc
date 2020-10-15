@@ -6,11 +6,9 @@
 #include "db/db.h"
 #include "db/hash_db.h"
 #include "util/zipf_query_generator.h"
+#include "constants.h"
 
 namespace tinykv {
-  constexpr int32_t kQueryTimes = 10000;
-  constexpr int32_t kMaxQueryTimes = 1000;
-  constexpr int32_t kQueryThreadsNum = 8;
 
   void QueryWorker(db::DB *db, ZipfQueryGenerator *generator) {
     Slice key;
@@ -54,15 +52,15 @@ namespace tinykv {
 
     clock_t begin_t = clock();
     Status s = db::Open(options, &db);
-    CHECK_STATUS(s)
+    RETURN_IFN_OK(s)
     clock_t end_t = clock();
     printf("Build index cost: %.4fms\n", (end_t - begin_t) * 1.0 / CLOCKS_PER_SEC * 1000);
 
     ZipfQueryGenerator *generator;
     s = ZipfQueryGenerator::NewZipfQueryGenerator(options.query_filename,
-                                                  kQueryTimes, kMaxQueryTimes,
+                                                  kQueryTimes, kFirstQueryTimes,
                                                   &generator);
-    CHECK_STATUS(s)
+    RETURN_IFN_OK(s)
 
     std::vector<std::thread> threads;
     threads.reserve(kQueryThreadsNum);

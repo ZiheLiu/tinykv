@@ -7,23 +7,27 @@ set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
 set(TINYKV_BUILD_TEST ON CACHE BOOL "Build test or not, default is true")
 
-include_directories(".")
+include_directories("." "include/")
 
 aux_source_directory(util util_source_dir)
 
 add_executable(query_data
   ${util_source_dir}
+  include/options.h
+  include/constants.h
   util/hash.h
   util/hash.cc
   util/coding.h
+  util/zipf_query_generator.cc
+  util/zipf_query_generator.h
   db/db.h
   db/db.cc
   db/hash_db.h
   db/hash_db.cc
-  db/options.h
-  query_data.cc util/zipf_query_generator.cc util/zipf_query_generator.h)
+  query_data.cc)
 add_executable(gen_data
   ${util_source_dir}
+  include/constants.h
   gen_data.cc)
 
 if (TINYKV_BUILD_TEST)

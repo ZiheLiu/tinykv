@@ -48,10 +48,8 @@ namespace tinykv {
         }
 
         // Can't fit in buffer, so need to do at least one write.
-        Status status = FlushBuffer();
-        if (!status.ok()) {
-          return status;
-        }
+        Status s = FlushBuffer();
+        RETURN_IFN_OK(s)
 
         // Small writes go to buffer, large writes are written directly.
         if (write_size < kWritableFileBufferSize) {

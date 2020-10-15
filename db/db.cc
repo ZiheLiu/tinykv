@@ -3,7 +3,6 @@
 //
 
 #include "db/db.h"
-#include "db/hash_db.h"
 
 namespace tinykv {
 

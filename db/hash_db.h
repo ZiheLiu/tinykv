@@ -9,11 +9,10 @@
 #include "util/slice.h"
 #include "db/db.h"
 #include "util/file.h"
+#include "constants.h"
 
 namespace tinykv {
   namespace db {
-    // ~200W buckets
-    constexpr int kHashBucketsNum = 1 << (21 - 6);
     constexpr int kKeyHashSeed = 10247;
     constexpr uint64_t kBucketEmptyMask = -1;
 

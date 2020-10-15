@@ -80,7 +80,7 @@ inline Status & Status::operator=(const Status &other) {
   return *this;
 }
 
-#define CHECK_STATUS(status) if (!status.ok()) { return status; }
+#define RETURN_IFN_OK(status) if (!status.ok()) { return status; }
 
 #define BREAK_IFN_OK(status) if (!status.ok()) {break;}
 
