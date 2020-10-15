@@ -27,6 +27,10 @@ public:
     return {kIOError, msg};
   }
 
+  static Status NotFound(const Slice& msg) {
+    return {kNotFound, msg};
+  }
+
   bool ok() const {
     return state_ == nullptr;
   }
@@ -35,12 +39,17 @@ public:
     return code() == kIOError;
   }
 
+  bool IsNotFound() const {
+    return code() == kNotFound;
+  }
+
   std::string ToString();
 
 private:
   enum Code {
     kOk = 0,
-    kIOError = 1
+    kIOError = 1,
+    kNotFound = 2
   };
 
   // OK status has a null state_.
@@ -70,6 +79,10 @@ inline Status & Status::operator=(const Status &other) {
   }
   return *this;
 }
+
+#define CHECK_STATUS(status) if (!status.ok()) { return status; }
+
+#define BREAK_IFN_OK(status) if (!status.ok()) {break;}
 
 }
 

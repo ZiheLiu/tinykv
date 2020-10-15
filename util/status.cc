@@ -27,6 +27,9 @@ std::string Status::ToString() {
     case kIOError:
       result.append("IO error: ");
       break;
+    case kNotFound:
+      result.append("Not found: ");
+      break;
     default:
       result.append("Unknown code(");
       result.append(std::to_string(static_cast<int>(result[4])));

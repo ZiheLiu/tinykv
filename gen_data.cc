@@ -6,51 +6,69 @@
 
 #include "util/file.h"
 #include "util/random.h"
+#include "util/coding.h"
 
 namespace tinykv {
-  constexpr int64_t kDataBytes = 1024 * 1024 * 1024;
+  constexpr int64_t kDataBytes = 1024L * 1024 * 1024 * 16;
 
   constexpr int32_t kKeyBytesMin = 1;
-  const int32_t kKeyBytesMax = 1024;
+  constexpr int32_t kKeyBytesMax = 1024;
   constexpr int32_t kValueBytesMin = 1;
-  const int32_t kValueBytesMax = 1024 * 1024;
+  constexpr int32_t kValueBytesMax = 1024 * 1024;
+
+  constexpr int32_t kQueryTimes = 10000;
+  constexpr int32_t kMaxQueryTimes = 1000;
 
   Status generate_data() {
-    printf("Start generating kv data (%dMB)...\n", kDataBytes / 1024 / 1024);
+    printf("Start generating kv data (%lldMB in total)...\n", kDataBytes / 1024 / 1024);
 
     WritableFile* fout;
-    Status status = NewWritableFile("input_kv.bin", &fout);
-    if (!status.ok()) {
-      return status;
-    }
+    Status status = NewWritableFile("raw_input_kv.bin", &fout);
+    CHECK_STATUS(status)
 
-    random::Init();
+    WritableFile* query_fout;
+    status = NewWritableFile("query_kv.bin", &query_fout);
+    CHECK_STATUS(status)
+
+    Random::Init();
 
     char buf[8 + kKeyBytesMax + 8 + kValueBytesMax];
-    int64_t data_bytes = 0;
+    uint64_t data_bytes = 0;
+    int kv_num = 0;
+    int query_times = 0;
+    int query_kv_num = 0;
     while (data_bytes < kDataBytes) {
       char* ptr = buf;
-      int64_t key_size = random::RandInt(kKeyBytesMin, kKeyBytesMax);
-      memcpy(ptr, &key_size, sizeof(key_size));
+      uint64_t key_size = Random::NextInt(kKeyBytesMin, kKeyBytesMax);
+      EncodeFixed64(ptr, key_size);
       ptr += sizeof(key_size);
-      random::RandBytes(ptr, key_size);
+      Random::NextBytes(ptr, key_size);
       ptr += key_size;
 
-      int64_t value_size = random::RandInt(kValueBytesMin, kValueBytesMax);
-      memcpy(ptr, &value_size, sizeof(value_size));
+      uint64_t value_size = Random::NextInt(kValueBytesMin, kValueBytesMax);
+      EncodeFixed64(ptr, value_size);
       ptr += sizeof(value_size);
-      random::RandBytes(ptr, value_size);
+      Random::NextBytes(ptr, value_size);
       ptr += value_size;
 
       status = fout->Append(Slice(buf, ptr - buf));
-      if (!status.ok()) {
-        return status;
-      }
+      CHECK_STATUS(status)
 
       data_bytes += ptr - buf;
+      kv_num++;
+
+      if (query_times < kQueryTimes && Random::NextFloat() < 0.2) {
+        query_times += kMaxQueryTimes / (++query_kv_num);
+        status = query_fout->Append(Slice(buf, ptr - buf));
+        CHECK_STATUS(status)
+      }
     }
 
+    printf("%d kv pairs in total.\n", kv_num);
+    printf("%d query kv pairs in total.\n", query_kv_num);
+
     delete fout;
+    delete query_fout;
     return status;
   }
 }

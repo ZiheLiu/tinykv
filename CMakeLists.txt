@@ -11,9 +11,17 @@ include_directories(".")
 
 aux_source_directory(util util_source_dir)
 
-add_executable(tinykv_run
+add_executable(query_data
   ${util_source_dir}
-  main.cc )
+  util/hash.h
+  util/hash.cc
+  util/coding.h
+  db/db.h
+  db/db.cc
+  db/hash_db.h
+  db/hash_db.cc
+  db/options.h
+  query_data.cc util/zipf_query_generator.cc util/zipf_query_generator.h)
 add_executable(gen_data
   ${util_source_dir}
   gen_data.cc)
