@@ -2,8 +2,8 @@
 // Created by liuzihe on 2020/10/14.
 //
 
-#ifndef tinykv_SLICE_H
-#define tinykv_SLICE_H
+#ifndef TINYKV_SLICE_H
+#define TINYKV_SLICE_H
 
 #include <cstddef>
 #include <string>
@@ -47,4 +47,4 @@ private:
 
 }
 
-#endif //tinykv_SLICE_H
+#endif //TINYKV_SLICE_H

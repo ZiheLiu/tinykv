@@ -2,8 +2,8 @@
 // Created by liuzihe on 2020/10/14.
 //
 
-#ifndef tinykv_STATUS_H
-#define tinykv_STATUS_H
+#ifndef TINYKV_STATUS_H
+#define TINYKV_STATUS_H
 
 #include "slice.h"
 
@@ -73,4 +73,4 @@ inline Status & Status::operator=(const Status &other) {
 
 }
 
-#endif //tinykv_STATUS_H
+#endif //TINYKV_STATUS_H
