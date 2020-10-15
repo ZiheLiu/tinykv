@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 project(tinykv)
 
 set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
-set(TINYKV_BUILD_TEST ON)
+set(TINYKV_BUILD_TEST ON CACHE BOOL "Build test or not, default is true")
 
 include_directories(".")
 
