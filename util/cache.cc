@@ -58,6 +58,18 @@ namespace tinykv {
       Node head_;
       std::unordered_map<std::string, Node*> table_;
       std::mutex mutex_;
+
+      void RemoveFromList(Node* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+      }
+
+      void AppendToList(Node* node) {
+        head_.prev->next = node;
+        node->prev = head_.prev;
+        node->next = &head_;
+        head_.prev = node;
+      }
     };
 
     bool LRUCache::Get(const std::string &key, Slice* result, char *payload) {
@@ -67,9 +79,14 @@ namespace tinykv {
       if (it == table_.end()) {
         return false;
       }
-      const std::string& value = it->second->value;
+      Node* node = it->second;
+      const std::string& value = node->value;
       memcpy(payload, value.data(), value.size());
       *result = Slice(payload, value.size());
+
+      RemoveFromList(node);
+      AppendToList(node);
+
       return true;
     }
 
@@ -81,22 +98,14 @@ namespace tinykv {
       }
 
       Node *node = new Node(value, charge);
-      // Append node to tail of list.
-      head_.prev->next = node;
-      node->prev = head_.prev;
-      node->next = &head_;
-      head_.prev = node;
-      // Add node to table_.
+      AppendToList(node);
       table_[key] = node;
       node->it = table_.find(key);
 
       usage_ += charge;
       while (usage_ >= capacity_ && head_.next != &head_) {
         Node *old = head_.next;
-        // Remove old from list.
-        old->prev->next = old->next;
-        old->next->prev = old->prev;
-        // Remove from table_.
+        RemoveFromList(old);
         table_.erase(old->it);
 
         usage_ -= old->charge;
