@@ -16,7 +16,7 @@ namespace tinykv {
 
     Status HashDB::OpenDB(const std::string &raw_filename,
                           const std::string &index_filename,
-                          void** result) {
+                          DB** result) {
       SequentialFile *fin;
       Status s = NewSequentialFile(raw_filename, &fin);
       RETURN_IFN_OK(s)

@@ -7,7 +7,7 @@
 
 #include "util/slice.h"
 #include "util/status.h"
-#include "include/options.h"
+#include "constants.h"
 
 namespace tinykv {
 
@@ -23,7 +23,7 @@ namespace db {
     DB& operator=(const DB& other) = delete;
   };
 
-  Status Open(Options& options, DB** result);
+  Status Open(const std::string& raw_filename, const std::string& index_filename, DbPolicy policy, DB** result);
 
   inline DB::~DB() = default;
 }

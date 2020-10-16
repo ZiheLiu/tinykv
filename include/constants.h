@@ -8,6 +8,10 @@
 #include <cstdint>
 
 namespace tinykv {
+  enum DbPolicy {
+    kHashDB = 0
+  };
+
   // 1TB
   constexpr int64_t kGenDataBytes = 1024L * 1024 * 1024 * 1024;
   // ~200W buckets
@@ -24,11 +28,15 @@ namespace tinykv {
   constexpr float kSelectQueryProb = 0.01;
   constexpr int32_t kQueryThreadsNum = 8;
 
+#define USE_CACHE
   constexpr int32_t kNumCacheShardBits = 4;
   constexpr int32_t kNumCacheShards = 1 << kNumCacheShardBits;
   constexpr int32_t kCacheCapacity = 1024 * 1024 * 2;
 
-#define USE_CACHE
+  const std::string kRawFilename = "raw_input_kv.bin";
+  const std::string kIndexFilename = "index_input_kv.bin";
+  const std::string kQueryFilename = "query_kv.bin";
+  constexpr DbPolicy kDbPolicy = kHashDB;
 }
 
 #endif //TINYKV_CONSTANTS_H

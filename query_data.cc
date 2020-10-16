@@ -48,17 +48,17 @@ namespace tinykv {
     delete[] costs;
   }
 
-  Status TestDB(Options& options) {
+  Status TestDB() {
     db::DB* db;
 
     clock_t begin_t = clock();
-    Status s = db::Open(options, &db);
+    Status s = db::Open(kRawFilename, kIndexFilename, kDbPolicy, &db);
     RETURN_IFN_OK(s)
     clock_t end_t = clock();
     printf("Build index cost: %.4fms\n", (end_t - begin_t) * 1.0 / CLOCKS_PER_SEC * 1000);
 
     ZipfQueryGenerator *generator;
-    s = ZipfQueryGenerator::NewZipfQueryGenerator(options.query_filename,
+    s = ZipfQueryGenerator::NewZipfQueryGenerator(kQueryFilename,
                                                   kQueryTimes, kFirstQueryTimes,
                                                   &generator);
     RETURN_IFN_OK(s)
@@ -80,13 +80,7 @@ namespace tinykv {
 }
 
 int main() {
-  tinykv::Options options;
-  options.raw_filename = "raw_input_kv.bin";
-  options.index_filename = "index_input_kv.bin";
-  options.query_filename = "query_kv.bin";
-  options.open_db_func = tinykv::db::HashDB::OpenDB;
-
-  tinykv::Status s = tinykv::TestDB(options);
+  tinykv::Status s = tinykv::TestDB();
   if (!s.ok()) {
     std::cout << "Error: " << s.ToString() << std::endl;
   }

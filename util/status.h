@@ -31,6 +31,10 @@ public:
     return {kNotFound, msg};
   }
 
+  static Status InvalidArgument(const Slice& msg) {
+    return {kInvalidArgument, msg};
+  }
+
   bool ok() const {
     return state_ == nullptr;
   }
@@ -43,13 +47,18 @@ public:
     return code() == kNotFound;
   }
 
+  bool IsInvalidArgument() const {
+    return code() == kInvalidArgument;
+  }
+
   std::string ToString();
 
 private:
   enum Code {
     kOk = 0,
     kIOError = 1,
-    kNotFound = 2
+    kNotFound = 2,
+    kInvalidArgument = 3
   };
 
   // OK status has a null state_.

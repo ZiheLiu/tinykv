@@ -30,7 +30,7 @@ namespace tinykv {
 
       static Status OpenDB(const std::string &raw_filename,
                            const std::string &index_filename,
-                           void** result);
+                           DB** result);
 
       Status Get(const Slice &key, Slice* value, char* buf) override;
 

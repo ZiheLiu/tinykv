@@ -13,7 +13,6 @@ aux_source_directory(util util_source_dir)
 
 add_executable(query_data
   ${util_source_dir}
-  include/options.h
   include/constants.h
   util/hash.h
   util/hash.cc
