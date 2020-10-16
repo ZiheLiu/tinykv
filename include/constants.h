@@ -20,6 +20,7 @@ namespace tinykv {
 
   constexpr int32_t kQueryTimes = 100000;
   constexpr int32_t kFirstQueryTimes = 10000;
+  constexpr float kSelectQueryProb = 0.01;
   constexpr int32_t kQueryThreadsNum = 8;
 }
 

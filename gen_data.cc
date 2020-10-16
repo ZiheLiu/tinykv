@@ -50,7 +50,7 @@ namespace tinykv {
       data_bytes += ptr - buf;
       kv_num++;
 
-      if (query_times < kQueryTimes && Random::NextFloat() < 0.2) {
+      if (query_times < kQueryTimes && Random::NextFloat() < kSelectQueryProb) {
         int cur_query_times = kFirstQueryTimes / (++query_kv_num);
         query_times += cur_query_times > 1 ? cur_query_times : 1;
         status = query_fout->Append(Slice(buf, ptr - buf));
