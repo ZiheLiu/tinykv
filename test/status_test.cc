@@ -3,6 +3,9 @@
 //
 
 #include <gtest/gtest.h>
+#include <string>
+#include <unordered_map>
+#include "util/random.h"
 
 #include "util/status.h"
 
@@ -44,6 +47,12 @@ TEST(StatusTest, IOErrorTest) {
     // Assigment operator with others.
     other = Status::OK();
     ASSERT_TRUE(other.ok());
+
+    std::unordered_map<int, int> m;
+    m[1] = 1;
+    auto it = m.find(1);
+    m.erase(it);
+
 }
 
 }

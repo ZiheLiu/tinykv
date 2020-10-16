@@ -7,8 +7,9 @@
 
 #include "util/status.h"
 #include "util/slice.h"
-#include "db/db.h"
 #include "util/file.h"
+#include "util/cache.h"
+#include "db/db.h"
 #include "constants.h"
 
 namespace tinykv {
@@ -20,9 +21,11 @@ namespace tinykv {
     public:
       HashDB(): fin_(nullptr) {
         memset(buckets_, -1, sizeof(buckets_));
+        cache_ = NewLRUCache(kCacheCapacity);
       }
       ~HashDB() override {
         delete fin_;
+        delete cache_;
       }
 
       static Status OpenDB(const std::string &raw_filename,
@@ -37,6 +40,7 @@ namespace tinykv {
       // buckets_[i][2] is value_size
       uint64_t buckets_[kHashBucketsNum][3];
       RandomAccessFile* fin_;
+      Cache *cache_;
     };
 
   }

@@ -4,14 +4,14 @@
 
 #include "util/file.h"
 #include "util/hash.h"
-#include "db/hash_db.h"
 #include "util/coding.h"
+#include "db/hash_db.h"
 
 namespace tinykv {
   namespace db {
 
     static uint32_t KeyHash(const char* key, int64_t key_size) {
-      return Hash(key, key_size, kKeyHashSeed) & (kHashBucketsNum - 1);
+      return Hash(key, key_size, kKeyHashSeed) >> (32 - kHashBucketsBits);
     }
 
     Status HashDB::OpenDB(const std::string &raw_filename,
@@ -91,6 +91,12 @@ namespace tinykv {
     }
 
     Status HashDB::Get(const Slice &key, Slice* value, char* buf) {
+#ifdef USE_CACHE
+      if (cache_->Get(key.ToString(), value, buf)) {
+        return Status::OK();
+      }
+#endif
+
       uint32_t h = KeyHash(key.data(), key.size());
       uint64_t *bucket = buckets_[h];
       uint64_t offset = bucket[0];
@@ -110,6 +116,9 @@ namespace tinykv {
         // Find this key.
         if (key.compare(Slice(buf, key_size)) == 0) {
           *value = Slice(buf + key_size, value_size);
+#ifdef USE_CACHE
+          cache_->Put(key.ToString(), value->ToString(), key.size() + value->size());
+#endif
           return Status::OK();
         }
 

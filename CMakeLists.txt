@@ -20,6 +20,9 @@ add_executable(query_data
   util/coding.h
   util/zipf_query_generator.cc
   util/zipf_query_generator.h
+  util/cache.cc
+  util/cache.h
+  util/mutexlock.h
   db/db.h
   db/db.cc
   db/hash_db.h
@@ -37,11 +40,12 @@ if (TINYKV_BUILD_TEST)
     find_package(Threads REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})
     
-    aux_source_directory(test test_source_dir)
-    
     add_executable(tinykv_test
       ${util_source_dir}
-      ${test_source_dir})
+      test/slice_test.cc
+      test/status_test.cc
+      test/cache_test.cc
+      test/all_tests.cc)
     
     target_link_libraries(tinykv_test
       ${GTEST_BOTH_LIBRARIES}

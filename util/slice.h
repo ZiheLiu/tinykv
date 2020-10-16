@@ -33,11 +33,11 @@ public:
     return data_;
   }
 
-  bool Empty() {
+  bool Empty() const {
     return size_ == 0;
   }
 
-  std::string ToString() {
+  std::string ToString() const {
     return std::string(data_, size_);
   }
 

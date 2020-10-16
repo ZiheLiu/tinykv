@@ -11,7 +11,8 @@ namespace tinykv {
   // 1TB
   constexpr int64_t kGenDataBytes = 1024L * 1024 * 1024 * 1024;
   // ~200W buckets
-  constexpr int kHashBucketsNum = 1 << (21);
+  constexpr int kHashBucketsBits = 21;
+  constexpr int kHashBucketsNum = 1 << kHashBucketsBits;
 
   constexpr int32_t kKeyBytesMin = 1;
   constexpr int32_t kKeyBytesMax = 1024;
@@ -22,6 +23,12 @@ namespace tinykv {
   constexpr int32_t kFirstQueryTimes = 10000;
   constexpr float kSelectQueryProb = 0.01;
   constexpr int32_t kQueryThreadsNum = 8;
+
+  constexpr int32_t kNumCacheShardBits = 4;
+  constexpr int32_t kNumCacheShards = 1 << kNumCacheShardBits;
+  constexpr int32_t kCacheCapacity = 1024 * 1024 * 2;
+
+#define USE_CACHE
 }
 
 #endif //TINYKV_CONSTANTS_H
