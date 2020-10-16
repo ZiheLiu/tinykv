@@ -1,31 +1,37 @@
 #include <iostream>
-#include <ctime>
 #include <thread>
 #include <vector>
 #include <algorithm>
+#include <sys/time.h>
 
 #include "db/db.h"
-#include "db/hash_db.h"
 #include "util/zipf_query_generator.h"
 #include "constants.h"
 
 namespace tinykv {
 
+  double GetDurationMs(const timeval &begin_t, const timeval &end_t) {
+    return (end_t.tv_sec - begin_t.tv_sec) * 1000 + (end_t.tv_usec - begin_t.tv_usec) * 1.0 / 1000;
+  }
+
   void QueryWorker(db::DB *db, ZipfQueryGenerator *generator) {
     Slice key;
     Slice real_value;
     Slice value;
-    clock_t query_cost = 0;
+    double query_cost = 0;
+    timeval begin_t;
+    timeval end_t;
     char *buf = new char[16 + 1024 * 1024 + 1024 + 8];
-    clock_t *costs = new clock_t[kQueryTimes];
+    double *costs = new double[kQueryTimes];
     for (int i = 0; i < kQueryTimes; i++) {
       generator->Next(&key, &real_value);
 
-      clock_t begin_t = clock();
+      gettimeofday(&begin_t, nullptr);
       Status s = db->Get(key, &value, buf);
-      clock_t end_t = clock();
-      query_cost += end_t - begin_t;
-      costs[i] = end_t - begin_t;
+      gettimeofday(&end_t, nullptr);
+      double duration = GetDurationMs(begin_t, end_t);
+      query_cost += duration;
+      costs[i] = duration;
 
       if (s.IsNotFound()) {
         printf("Not found. key [%s]\n", key.ToString().c_str());
@@ -36,13 +42,13 @@ namespace tinykv {
 
     std::sort(costs, costs + kQueryTimes);
     printf("Per thread Query cost. Avg: %.4fms, p99: %.4fms, p95: %.4fms, p90: %.4fms, p80: %.4fms, p70: %.4fms, p50: %.4fms\n",
-           query_cost * 1.0 / CLOCKS_PER_SEC * 1000 / kQueryTimes,
-           costs[static_cast<int>(0.99 * kQueryTimes)] * 1.0 / CLOCKS_PER_SEC * 1000,
-           costs[static_cast<int>(0.95 * kQueryTimes)] * 1.0 / CLOCKS_PER_SEC * 1000,
-           costs[static_cast<int>(0.90 * kQueryTimes)] * 1.0 / CLOCKS_PER_SEC * 1000,
-           costs[static_cast<int>(0.80 * kQueryTimes)] * 1.0 / CLOCKS_PER_SEC * 1000,
-           costs[static_cast<int>(0.70 * kQueryTimes)] * 1.0 / CLOCKS_PER_SEC * 1000,
-           costs[static_cast<int>(0.50 * kQueryTimes)] * 1.0 / CLOCKS_PER_SEC * 1000);
+           query_cost / kQueryTimes,
+           costs[static_cast<int>(0.99 * kQueryTimes)],
+           costs[static_cast<int>(0.95 * kQueryTimes)],
+           costs[static_cast<int>(0.90 * kQueryTimes)],
+           costs[static_cast<int>(0.80 * kQueryTimes)],
+           costs[static_cast<int>(0.70 * kQueryTimes)],
+           costs[static_cast<int>(0.50 * kQueryTimes)]);
 
     delete[] buf;
     delete[] costs;
@@ -51,11 +57,13 @@ namespace tinykv {
   Status TestDB() {
     db::DB* db;
 
-    clock_t begin_t = clock();
+    timeval begin_t;
+    timeval end_t;
+    gettimeofday(&begin_t, nullptr);
     Status s = db::Open(kRawFilename, kIndexFilename, kDbPolicy, &db);
     RETURN_IFN_OK(s)
-    clock_t end_t = clock();
-    printf("Build index cost: %.4fms\n", (end_t - begin_t) * 1.0 / CLOCKS_PER_SEC * 1000);
+    gettimeofday(&end_t, nullptr);
+    printf("Build index costs: %.4fms\n", GetDurationMs(begin_t, end_t));
 
     ZipfQueryGenerator *generator;
     s = ZipfQueryGenerator::NewZipfQueryGenerator(kQueryFilename,
