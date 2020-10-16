@@ -57,6 +57,10 @@ namespace tinykv {
     buffer[7] = static_cast<uint8_t>(value >> 56);
   }
 
+  char* DecodeVarint64(const char* ptr, uint64_t* dst);
+
+  char* EncodeVarint64(char *dst, uint64_t value);
+
 } // End tinykv namespace.
 
 #endif //TINYKV_CODING_H

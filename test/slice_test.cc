@@ -8,22 +8,22 @@
 
 namespace tinykv {
 
-TEST(SliceTest, FromStringTest) {
+  TEST(SliceTest, FromStringTest) {
     std::string s = "abc";
     Slice slice(s);
     ASSERT_EQ(s, slice.ToString());
-}
+  }
 
-TEST(SliceTest, FromCStringTest) {
+  TEST(SliceTest, FromCStringTest) {
     const char *s = "abc";
     Slice slice(s);
     ASSERT_EQ(std::string(s), slice.ToString());
-}
+  }
 
-TEST(SliceTest, FromCharArrayTest) {
+  TEST(SliceTest, FromCharArrayTest) {
     const char *s = "abc";
     Slice slice(s, 2);
     ASSERT_EQ("ab", slice.ToString());
-}
+  }
 
 }

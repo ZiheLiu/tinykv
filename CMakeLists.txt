@@ -16,6 +16,7 @@ target_sources(tinykv
   util/cache.h
   util/cache.cc
   util/coding.h
+  util/coding.cc
   util/file.h
   util/file.cc
   util/hash.h
@@ -46,6 +47,7 @@ if (TINYKV_BUILD_TEST)
     
     add_executable(tinykv_test
       test/cache_test.cc
+      test/coding_test.cc
       test/slice_test.cc
       test/status_test.cc
       test/all_tests.cc)
