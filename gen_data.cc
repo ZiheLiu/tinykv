@@ -3,6 +3,7 @@
 //
 
 #include <cstdio>
+#include <algorithm>
 
 #include "util/file.h"
 #include "util/random.h"
@@ -50,7 +51,8 @@ namespace tinykv {
       kv_num++;
 
       if (query_times < kQueryTimes && Random::NextFloat() < 0.2) {
-        query_times += kFirstQueryTimes / (++query_kv_num);
+        int cur_query_times = kFirstQueryTimes / (++query_kv_num);
+        query_times += cur_query_times > 1 ? cur_query_times : 1;
         status = query_fout->Append(Slice(buf, ptr - buf));
         RETURN_IFN_OK(status)
       }
