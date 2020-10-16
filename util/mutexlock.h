@@ -8,6 +8,7 @@
 #include <mutex>
 
 namespace tinykv {
+
   class MutexLock {
   public:
     explicit MutexLock(std::mutex* mu): mu_(mu) {
@@ -23,6 +24,7 @@ namespace tinykv {
   private:
     std::mutex* const mu_;
   };
-}
+
+} // End tinykv namespace.
 
 #endif //TINYKV_MUTEXLOCK_H

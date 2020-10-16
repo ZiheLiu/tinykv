@@ -128,6 +128,6 @@ namespace tinykv {
       }
     }
 
-  }
-}
+  } // End db namespace.
+} // End tinykv namespace.
 

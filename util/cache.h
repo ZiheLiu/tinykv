@@ -10,6 +10,7 @@
 #include "slice.h"
 
 namespace tinykv {
+
   class Cache {
   public:
     Cache() = default;
@@ -25,7 +26,8 @@ namespace tinykv {
   inline Cache::~Cache() = default;
 
   Cache *NewLRUCache(size_t capacity);
-}
+
+} // End tinykv namespace.
 
 
 #endif //TINYKV_CACHE_H

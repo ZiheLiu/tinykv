@@ -36,6 +36,6 @@ namespace tinykv {
     }
   };
 
-}
+} // End tinykv namespace.
 
 #endif //TINYKV_RANDOM_H

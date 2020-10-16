@@ -7,8 +7,8 @@
 #include "constants.h"
 
 namespace tinykv {
-
   namespace db {
+
     Status Open(const std::string& raw_filename, const std::string& index_filename, DbPolicy policy, DB** result) {
       switch (policy) {
         case kHashDB:
@@ -17,7 +17,7 @@ namespace tinykv {
           return Status::InvalidArgument("DbPolicy [" + std::to_string(policy) + "]");
       }
     }
-  }
 
-}
+  }// End db namespace.
+}// End tinykv namespace.
 

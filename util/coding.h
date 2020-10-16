@@ -8,6 +8,7 @@
 #include <cstdint>
 
 namespace tinykv {
+
   inline uint32_t DecodeFixed32(const char* ptr) {
     const uint8_t* const buffer = reinterpret_cast<const uint8_t*>(ptr);
 
@@ -55,6 +56,7 @@ namespace tinykv {
     buffer[6] = static_cast<uint8_t>(value >> 48);
     buffer[7] = static_cast<uint8_t>(value >> 56);
   }
-}
+
+} // End tinykv namespace.
 
 #endif //TINYKV_CODING_H

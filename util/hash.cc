@@ -2,7 +2,7 @@
 // Created by liuzihe on 2020/10/15.
 //
 
-#include "hash.h"
+#include "util/hash.h"
 #include "util/coding.h"
 
 namespace tinykv {
@@ -39,4 +39,5 @@ namespace tinykv {
     }
     return h;
   }
-}
+
+} // End tinykv namespace.

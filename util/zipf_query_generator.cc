@@ -5,10 +5,10 @@
 #include "util/file.h"
 #include "util/coding.h"
 #include "util/random.h"
-
 #include "zipf_query_generator.h"
 
 namespace tinykv {
+
   Status ZipfQueryGenerator::NewZipfQueryGenerator(const std::string& filename,
                                                    int query_times, int first_query_times,
                                                    ZipfQueryGenerator **result) {
@@ -70,4 +70,5 @@ namespace tinykv {
     *key = Slice(ptr + 8, it->second.key_size);
     *value = Slice(ptr + 8 + it->second.key_size + 8, it->second.value_size);
   }
-}
+
+} // End tinykv namespace.

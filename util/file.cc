@@ -8,11 +8,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+
 #include "file.h"
 
 namespace tinykv {
-
   namespace {
+
     constexpr const size_t kWritableFileBufferSize = 65536;
 
     Status PosixError(const std::string& context, int error_number) {
@@ -136,7 +137,48 @@ namespace tinykv {
       int fd_;
       const std::string filename_;
     };
-  }
+
+
+
+    class PosixSequentialFile final : public SequentialFile {
+    public:
+      PosixSequentialFile(std::string filename, int fd)
+          : fd_(fd), filename_(std::move(filename)) {}
+
+      ~PosixSequentialFile() override {
+        close(fd_);
+      }
+
+      Status Read(size_t n, Slice* result, char* scratch) override {
+        Status status;
+        while (true) {
+          ::ssize_t read_size = ::read(fd_, scratch, n);
+          if (read_size < 0) {  // Read error.
+            if (errno == EINTR) {
+              continue;  // Retry
+            }
+            status = PosixError(filename_, errno);
+            break;
+          }
+          *result = Slice(scratch, read_size);
+          break;
+        }
+        return status;
+      }
+
+      Status Skip(uint64_t n) override {
+        if (::lseek(fd_, n, SEEK_CUR) == static_cast<off_t>(-1)) {
+          return PosixError(filename_, errno);
+        }
+        return Status::OK();
+      }
+
+    private:
+      const int fd_;
+      const std::string filename_;
+    };
+
+  } // End anonymous namespace.
 
   Status NewWritableFile(const std::string& filename, WritableFile** result) {
     int fd = ::open(filename.c_str(), O_TRUNC | O_WRONLY | O_CREAT, 0644);
@@ -160,44 +202,6 @@ namespace tinykv {
     return Status::OK();
   }
 
-  class PosixSequentialFile final : public SequentialFile {
-  public:
-    PosixSequentialFile(std::string filename, int fd)
-        : fd_(fd), filename_(std::move(filename)) {}
-
-    ~PosixSequentialFile() override {
-      close(fd_);
-    }
-
-    Status Read(size_t n, Slice* result, char* scratch) override {
-      Status status;
-      while (true) {
-        ::ssize_t read_size = ::read(fd_, scratch, n);
-        if (read_size < 0) {  // Read error.
-          if (errno == EINTR) {
-            continue;  // Retry
-          }
-          status = PosixError(filename_, errno);
-          break;
-        }
-        *result = Slice(scratch, read_size);
-        break;
-      }
-      return status;
-    }
-
-    Status Skip(uint64_t n) override {
-      if (::lseek(fd_, n, SEEK_CUR) == static_cast<off_t>(-1)) {
-        return PosixError(filename_, errno);
-      }
-      return Status::OK();
-    }
-
-  private:
-    const int fd_;
-    const std::string filename_;
-  };
-
   Status NewSequentialFile(const std::string &filename, SequentialFile **result) {
     int fd = ::open(filename.c_str(), O_RDONLY);
     if (fd < 0) {
@@ -219,6 +223,4 @@ namespace tinykv {
     return Status::OK();
   }
 
-
-
-}
+} // End tinykv namespace.

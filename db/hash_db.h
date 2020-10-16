@@ -14,6 +14,7 @@
 
 namespace tinykv {
   namespace db {
+
     constexpr int kKeyHashSeed = 10247;
     constexpr uint64_t kBucketEmptyMask = -1;
 
@@ -43,7 +44,7 @@ namespace tinykv {
       Cache *cache_;
     };
 
-  }
-}
+  } // End db namespace.
+} // End tinykv namespace.
 
 #endif //TINYKV_HASH_DB_H

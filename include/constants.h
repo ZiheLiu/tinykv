@@ -43,6 +43,6 @@ namespace tinykv {
   const std::string kIndexFilename = "index_input_kv.bin";
   const std::string kQueryFilename = "query_kv.bin";
   constexpr DbPolicy kDbPolicy = kHashDB;
-}
+} // End tinykv namespace.
 
 #endif //TINYKV_CONSTANTS_H

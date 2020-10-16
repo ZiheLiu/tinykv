@@ -61,8 +61,7 @@ namespace tinykv {
   Status NewSequentialFile(const std::string &filename, SequentialFile **result);
 
   Status GetFileSize(const std::string& filename, uint64_t* size);
-}
 
-
+} // End tinykv namespace.
 
 #endif //TINYKV_FILE_H

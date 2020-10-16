@@ -9,30 +9,35 @@ set(TINYKV_BUILD_TEST ON CACHE BOOL "Build test or not, default is true")
 
 include_directories("." "include/")
 
-aux_source_directory(util util_source_dir)
-
-add_executable(query_data
-  ${util_source_dir}
+add_library(tinykv "")
+target_sources(tinykv
+  PRIVATE
   include/constants.h
+  util/cache.h
+  util/cache.cc
+  util/coding.h
+  util/file.h
+  util/file.cc
   util/hash.h
   util/hash.cc
-  util/coding.h
-  util/zipf_query_generator.cc
-  util/zipf_query_generator.h
-  util/cache.cc
-  util/cache.h
   util/mutexlock.h
+  util/random.h
+  util/slice.h
+  util/status.h
+  util/status.cc
+  util/zipf_query_generator.h
+  util/zipf_query_generator.cc
   db/db.h
   db/db.cc
   db/hash_db.h
-  db/hash_db.cc
-  query_data.cc)
-add_executable(gen_data
-  ${util_source_dir}
-  include/constants.h
-  gen_data.cc)
+  db/hash_db.cc)
 
+add_executable(query_data query_data.cc)
+target_link_libraries(query_data tinykv)
 target_link_libraries(query_data -lpthread)
+
+add_executable(gen_data gen_data.cc)
+target_link_libraries(gen_data tinykv)
 
 if (TINYKV_BUILD_TEST)
     find_package(GTest REQUIRED)
@@ -40,13 +45,13 @@ if (TINYKV_BUILD_TEST)
     include_directories(${GTEST_INCLUDE_DIRS})
     
     add_executable(tinykv_test
-      ${util_source_dir}
+      test/cache_test.cc
       test/slice_test.cc
       test/status_test.cc
-      test/cache_test.cc
       test/all_tests.cc)
     
     target_link_libraries(tinykv_test
+      tinykv
       ${GTEST_BOTH_LIBRARIES}
       ${CMAKE_THREAD_LIBS_INIT})
     

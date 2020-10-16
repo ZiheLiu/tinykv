@@ -5,7 +5,6 @@
 #ifndef TINYKV_ZIPF_QUERY_GENERATOR_H
 #define TINYKV_ZIPF_QUERY_GENERATOR_H
 
-
 #include <cstdint>
 #include <map>
 
@@ -45,6 +44,6 @@ namespace tinykv {
     std::map<float, Node> prob2node_;
   };
 
-}
+} // End tinykv namespace.
 
 #endif //TINYKV_ZIPF_QUERY_GENERATOR_H

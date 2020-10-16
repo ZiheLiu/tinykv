@@ -5,14 +5,15 @@
 #include <mutex>
 #include <unordered_map>
 
-#include "cache.h"
-#include "util/mutexlock.h"
+#include "util/cache.h"
 #include "util/hash.h"
-#include "constants.h"
+#include "util/mutexlock.h"
 #include "util/slice.h"
+#include "constants.h"
 
 namespace tinykv {
   namespace {
+
     struct Node {
       std::string value;
       int charge;
@@ -131,9 +132,11 @@ namespace tinykv {
         return h >> (32 - kNumCacheShardBits);
       }
     };
-  }
+
+  } // End anonymous namespace.
 
   Cache *NewLRUCache(size_t capacity) {
     return new ShardedLRUCache(capacity);
   }
-}
+
+} // End tinykv namespace.
