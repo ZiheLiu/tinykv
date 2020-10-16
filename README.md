@@ -13,3 +13,31 @@
 
 允许对数据文件做任意预处理，但是预处理的时间计入到整个读取过程的代价里。
 
+## 运行
+
+
+```shell
+# 下载项目
+git clone --recurse-submodules git@github.com:ZiheLiu/tinykv.git
+
+# 安装 googletest
+cd googletest
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+
+# 编译项目
+cd ..
+mkdir build
+cd build
+cmake ..
+make
+
+# 生成数据
+./gen_data
+
+# 运行查询测试
+./query_data
+```
