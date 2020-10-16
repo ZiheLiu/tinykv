@@ -12,7 +12,7 @@
 namespace tinykv {
 
   Status generate_data() {
-    printf("Start generating kv data (%lldMB in total)...\n", kGenDataBytes / 1024 / 1024);
+    printf("Start generating kv data (%ldMB in total)...\n", kGenDataBytes / 1024 / 1024);
 
     WritableFile* fout;
     Status status = NewWritableFile("raw_input_kv.bin", &fout);

@@ -3,6 +3,7 @@
 //
 
 #include <cerrno>
+#include <cstring>
 #include <utility>
 #include <fcntl.h>
 #include <unistd.h>

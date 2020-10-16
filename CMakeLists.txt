@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.5)
 project(tinykv)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -29,6 +29,8 @@ add_executable(gen_data
   ${util_source_dir}
   include/constants.h
   gen_data.cc)
+
+target_link_libraries(query_data -lpthread)
 
 if (TINYKV_BUILD_TEST)
     find_package(GTest REQUIRED)

@@ -2,6 +2,7 @@
 #include <ctime>
 #include <thread>
 #include <vector>
+#include <algorithm>
 
 #include "db/db.h"
 #include "db/hash_db.h"

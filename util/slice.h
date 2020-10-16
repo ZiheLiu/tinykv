@@ -6,6 +6,7 @@
 #define TINYKV_SLICE_H
 
 #include <cstddef>
+#include <cstring>
 #include <string>
 
 namespace tinykv {

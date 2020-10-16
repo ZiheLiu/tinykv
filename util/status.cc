@@ -2,6 +2,10 @@
 // Created by liuzihe on 2020/10/14.
 //
 
+#include <cstdlib>
+#include <cassert>
+#include <cstring>
+
 #include "status.h"
 
 namespace tinykv {
