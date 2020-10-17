@@ -107,8 +107,8 @@ namespace tinykv {
         Node *old = head_.next;
         RemoveFromList(old);
         table_.erase(old->it);
-
         usage_ -= old->charge;
+        delete old;
       }
     }
 
@@ -137,7 +137,7 @@ namespace tinykv {
       LRUCache shard_[kNumCacheShards];
 
       static inline uint32_t HashShard(const std::string &key) {
-        uint32_t h = Hash(key.data(), key.size(), 0);
+        uint32_t h = Hash(key.data(), key.size(), 0xff77ff77);
         return h >> (32 - kNumCacheShardBits);
       }
     };

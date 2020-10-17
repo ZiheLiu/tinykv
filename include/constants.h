@@ -29,7 +29,7 @@ namespace tinykv {
   constexpr int32_t kQueryThreadsNum = 8;
 
   // For HashDB.
-  constexpr int kHashBucketsBits = 28 - kScaleBits;
+  constexpr int kHashBucketsBits = 26 - kScaleBits;
   constexpr int kHashBucketsNum = 1 << kHashBucketsBits;
 
   // For LRUCache.
