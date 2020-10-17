@@ -120,7 +120,7 @@ ShardedLRUCache 以及索引结构都使用 murmur hash 算法。
 
 - 将 1TB 数据外排序时间代价比较大，同时读取 1024 个文件的性能与随机 I/O 类似了。由于预处理时间也计算在查询时间内，需要根据查询的次数来考虑方案的选择。如果查询的次数特别多，可以使用该方案。否则，在查询次数不是特别多、或者 key-value 数目没有超过 64M 时，可以选用硬盘 HashMap 的方案。
 
-## 运行
+## 4. 运行
 
 
 ```shell
@@ -151,3 +151,43 @@ make
 # 运行查询测试
 ./query_data
 ```
+
+## 5. 测试结果
+
+### 5.1 测试环境
+
+硬盘
+
+- 转速：7200 rpm。
+- 扇区大小： 512 bytes logical, 4096 bytes physical。
+- 顺序写 4KB：bw=11458KB/s, iops=2864
+- 顺序读 4KB：bw=40669KB/s, iops=10167
+- 随机读 4KB：bw=58591KB/s, iops=14647
+
+### 5.2 测试数据
+
+方案中，1TB 原始数据，LRUCache 占用 2GB 内存、Hash Bucket 是占用 1.5GB 内存。
+
+实际测试时，相应缩小了 8 倍。即，128GB 原始数据，LRUCache 占用 2/8GB 内存、Hash Bucket 是占用 1.5/8GB 内存。
+
+- key_size 是 [1B, 1KB] 的 uniform 分布、value size 是 [1B, 1MB] 的 uniform 分布，共 262255 个 key-value。
+
+- 同时生成了 zipf 分布的测试数据，共 16332 个查询 key。查询 10 万次，频率最高的 key 占 10%。
+
+### 5.3 测试结果
+
+建立索引耗时：1496503.8360ms
+
+8 个线程并发查询 key，每个线程查询 10 万次：
+
+```
+Per thread Query cost. Avg: 0.0472ms, p99: 0.0530ms, p95: 0.0500ms, p90: 0.0490ms, p80: 0.0480ms, p70: 0.0480ms, p50: 0.0470ms
+Per thread Query cost. Avg: 0.0472ms, p99: 0.0560ms, p95: 0.0510ms, p90: 0.0490ms, p80: 0.0480ms, p70: 0.0480ms, p50: 0.0470ms
+Per thread Query cost. Avg: 0.0484ms, p99: 0.0570ms, p95: 0.0520ms, p90: 0.0500ms, p80: 0.0490ms, p70: 0.0490ms, p50: 0.0480ms
+Per thread Query cost. Avg: 0.0484ms, p99: 0.0560ms, p95: 0.0520ms, p90: 0.0510ms, p80: 0.0500ms, p70: 0.0490ms, p50: 0.0480ms
+Per thread Query cost. Avg: 0.0504ms, p99: 0.0570ms, p95: 0.0550ms, p90: 0.0540ms, p80: 0.0530ms, p70: 0.0520ms, p50: 0.0510ms
+Per thread Query cost. Avg: 0.0504ms, p99: 0.0570ms, p95: 0.0550ms, p90: 0.0540ms, p80: 0.0530ms, p70: 0.0520ms, p50: 0.0510ms
+Per thread Query cost. Avg: 0.0528ms, p99: 0.0600ms, p95: 0.0580ms, p90: 0.0580ms, p80: 0.0570ms, p70: 0.0560ms, p50: 0.0550ms
+Per thread Query cost. Avg: 0.0529ms, p99: 0.0630ms, p95: 0.0590ms, p90: 0.0580ms, p80: 0.0570ms, p70: 0.0560ms, p50: 0.0550ms
+```
+
